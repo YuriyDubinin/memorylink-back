@@ -3,7 +3,7 @@ const path = require('path');
 const dir = {
     root: __dirname,
     configs: path.join(__dirname, '../../configs'),
-    static: path.join(__dirname, '../../static'),
+    public: path.join(__dirname, '../../public'),
     controllers: path.join(__dirname, '..', 'controllers'),
     helpers: path.join(__dirname, '..', 'helpers'),
     libs: path.join(__dirname, '..', 'libs'),

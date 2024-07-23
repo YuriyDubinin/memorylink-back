@@ -42,7 +42,7 @@ class UserController {
      * @returns {Promise<void>} A promise that resolves to void.
      */
     async getUserByKey(req, res, passToNext) {
-        const {key} = req.body;
+        const {key} = req.query;
 
         try {
             const user = await UserService.getUserByKey(key);
