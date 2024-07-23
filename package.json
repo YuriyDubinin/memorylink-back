@@ -1,0 +1,28 @@
+{
+    "name": "memorylink-back",
+    "version": "0.0.1",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js",
+        "dev": "nodemon app.js",
+        "prettier": "npx prettier --check . --config ./.prettierrc",
+        "prettier_fix": "npm run prettier -- --write"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "cors": "^2.8.5",
+        "crypto-js": "^4.2.0",
+        "dotenv": "^16.3.1",
+        "express": "^4.18.2",
+        "express-fileupload": "^1.4.3",
+        "knex": "^3.1.0",
+        "mysql": "^2.18.1",
+        "uuid": "^10.0.0"
+    },
+    "devDependencies": {
+        "nodemon": "^3.0.2",
+        "prettier": "^3.1.1"
+    }
+}
