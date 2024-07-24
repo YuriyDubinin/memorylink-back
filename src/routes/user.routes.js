@@ -9,5 +9,6 @@ userRoutes.get('/user', UserController.getUserByKey);
 userRoutes.post('/user', UserController.createUser);
 userRoutes.put('/user', UserController.updateUserById);
 userRoutes.delete('/user', UserController.deleteUserById);
+userRoutes.delete('/user/key', UserController.deleteUserByKey);
 
 module.exports = userRoutes;

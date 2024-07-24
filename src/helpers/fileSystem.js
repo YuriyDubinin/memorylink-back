@@ -1,5 +1,6 @@
 const dir = require('../helpers/dirConfig');
 const fs = require('fs');
+const fsPromises = require('fs/promises');
 const path = require('path');
 const {v4} = require('uuid');
 const {AppError} = require(dir.helpers + '/error');
@@ -15,6 +16,7 @@ function createUserFileStructure(key) {
 
     try {
         if (!fs.existsSync(path.join(`${__dirname}/users`, userDirName))) {
+            // Creating the user's main directory
             fs.mkdirSync(path.join(`${__dirname}`, '..', '../static/users', userDirName), (err) => {
                 if (err) {
                     console.log('err: ', err);
@@ -22,17 +24,22 @@ function createUserFileStructure(key) {
                 }
             });
 
+            // Creating users photos directory
             fs.mkdirSync(
                 path.join(`${__dirname}`, '..', `../static/users/${userDirName}`, 'photos'),
             );
 
+            // Creating users videos directory
             fs.mkdirSync(
                 path.join(`${__dirname}`, '..', `../static/users/${userDirName}`, 'videos'),
             );
+
+            console.log(`User directory structure for ${userDirName} has been created.`);
+        } else {
+            console.log(`User directory with name ${userDirName} already exist.`);
         }
     } catch (error) {
-        // TODO: handle the error
-        console.error(error);
+        console.log(error);
     }
 }
 
@@ -47,20 +54,42 @@ function createUserFileStructure(key) {
 function uploadUserFiles(key, category, data) {
     const hashes = [];
 
+    data.map((file) => {
+        const fileHash = `${v4()}.${file.name.split('.').pop()}`;
+
+        file.mv(path.join(`${__dirname}`, '..', `../static/users/${key}/${category}`, fileHash));
+
+        hashes.push(fileHash);
+    });
+
+    return hashes;
+}
+
+/**
+ * @description
+ * Deletes a user's file structure.
+ * @param {string} key - Unique user key.
+ * @returns {void} - This function does not return a value.
+ */
+function deleteUserFileStructureByKey(key) {
+    const userDirName = key;
+    const userDirPath = path.join(__dirname, '..', '../static/users', userDirName);
+
     try {
-        data.map((file) => {
-            const fileHash = `${v4()}.${file.name.split('.').pop()}`;
+        if (fs.existsSync(userDirPath)) {
+            // Delete nested directories
+            fsPromises.rm(path.join(userDirPath, 'photos'), {recursive: true});
+            fsPromises.rm(path.join(userDirPath, 'videos'), {recursive: true});
 
-            file.mv(
-                path.join(`${__dirname}`, '..', `../static/users/${key}/${category}`, fileHash),
-            );
+            // Deleting the user's main directory
+            fsPromises.rm(userDirPath, {recursive: true});
 
-            hashes.push(fileHash);
-        });
-
-        return hashes;
+            console.log(`User directory structure for ${userDirName} has been deleted.`);
+        } else {
+            console.log(`User directory ${userDirName} does not exist.`);
+        }
     } catch (error) {
-        // TODO: handle the error
+        throw error;
         console.error(error);
     }
 }
@@ -68,4 +97,5 @@ function uploadUserFiles(key, category, data) {
 module.exports = {
     createUserFileStructure,
     uploadUserFiles,
+    deleteUserFileStructureByKey,
 };

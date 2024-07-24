@@ -1,7 +1,9 @@
 const dir = require('../helpers/dirConfig');
 const CryptoJS = require('crypto-js');
 const UserModel = require(dir.models + '/user.model');
-const {createUserFileStructure, uploadUserFiles} = require(dir.helpers + '/fileSystem');
+const {createUserFileStructure, uploadUserFiles, deleteUserFileStructureByKey} = require(
+    dir.helpers + '/fileSystem',
+);
 const {countStringBytes} = require(dir.helpers + '/utils');
 
 class UserService {
@@ -148,6 +150,24 @@ class UserService {
      */
     async deleteUserById(id) {
         const result = await UserModel.deleteUserById(id);
+
+        if (!result) {
+            return null;
+        }
+
+        return result;
+    }
+
+    /**
+     * @description
+     * The service method to delete user by key.
+     * @param {string} - Unique user key.
+     * @returns {object} The object of user.
+     */
+    async deleteUserByKey(key) {
+        await deleteUserFileStructureByKey(key);
+
+        const result = await UserModel.deleteUserByKey(key);
 
         if (!result) {
             return null;

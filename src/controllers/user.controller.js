@@ -178,7 +178,7 @@ class UserController {
      * @returns {Promise<void>} A promise that resolves to void.
      */
     async deleteUserById(req, res, passToNext) {
-        const {id} = req.body;
+        const {id} = req.query;
 
         try {
             const result = await UserService.deleteUserById(id);
@@ -201,25 +201,37 @@ class UserController {
         }
     }
 
-    // uploadFile(req, res) {
-    //     if (!req.files) {
-    //         return res.status(400).json({msg: 'No file uploaded'});
-    //     }
+    /**
+     * @description
+     * This controller method to delete user by key.
+     * @param {object} req - The request object.
+     * @param {object} res - The response object.
+     * @param {function} - The next middlwares function in the application's requestresponce cicle.
+     * @returns {Promise<void>} A promise that resolves to void.
+     */
+    async deleteUserByKey(req, res, passToNext) {
+        const {key} = req.query;
 
-    //     const file = req.files.file;
+        try {
+            const result = await UserService.deleteUserByKey(key);
 
-    //     if (!file) {
-    //         return res.json({error: 'Incorrect input name'});
-    //     }
+            if (!result) {
+                return passToNext(
+                    new AppError(`User with key ${key} not found.`, STATUS_CODES.NOT_FOUND),
+                );
+            }
 
-    //     try {
-    //         UserService.uploadFile(file);
-
-    //         return res.json({msg: 'File was uploaded'});
-    //     } catch (e) {
-    //         res.status(500).json(e);
-    //     }
-    // }
+            return sendResponse(res, STATUS_CODES.OK, `User with key ${key} deleted successfully`);
+        } catch (error) {
+            return passToNext(
+                new AppError(
+                    error.message || 'Internal Server Error',
+                    error.status || STATUS_CODES.INTERNAL_SERVER_ERROR,
+                    error.response || error,
+                ),
+            );
+        }
+    }
 }
 
 module.exports = new UserController();

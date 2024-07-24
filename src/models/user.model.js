@@ -77,8 +77,8 @@ class UserModel {
             phone,
             email,
             address,
-            // photos,
-            // videos,
+            photos,
+            videos,
         });
 
         return query;
@@ -88,10 +88,22 @@ class UserModel {
      * @description
      * Delete user by id from database.
      * @param {id} - Unique user id.
-     * @returns {Promise<object[]>} - A promise that resolves to an array with one object inside.
+     * @returns {Promise<object[]>} A promise that resolves to an array with one object inside.
      */
     async deleteUserById(id) {
         const query = await db('users').where({id}).del();
+
+        return query;
+    }
+
+    /**
+     * @description
+     * Delete user by key from database.
+     * @param {id} - Unique user key.
+     * @returns {Promise<object[]>} A promise that resolves to an array with one object inside.
+     */
+    async deleteUserByKey(key) {
+        const query = await db('users').where({key}).del();
 
         return query;
     }
