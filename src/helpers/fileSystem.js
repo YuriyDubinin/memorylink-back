@@ -89,8 +89,7 @@ function deleteUserFileStructureByKey(key) {
             console.log(`User directory ${userDirName} does not exist.`);
         }
     } catch (error) {
-        throw error;
-        console.error(error);
+        console.log(error)
     }
 }
 
