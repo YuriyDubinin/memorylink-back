@@ -17,6 +17,9 @@ const app = express();
 app.use(express.json());
 app.use(fileUpload());
 
+// Serving static files
+app.use('/static', express.static(dir.static));
+
 // Routes
 app.use('/users', cors(delegateCorsOptions), userRoutes);
 

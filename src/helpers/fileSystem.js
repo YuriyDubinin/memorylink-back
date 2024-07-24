@@ -15,7 +15,7 @@ function createUserFileStructure(key) {
 
     try {
         if (!fs.existsSync(path.join(`${__dirname}/users`, userDirName))) {
-            fs.mkdirSync(path.join(`${__dirname}`, '..', '../public/users', userDirName), (err) => {
+            fs.mkdirSync(path.join(`${__dirname}`, '..', '../static/users', userDirName), (err) => {
                 if (err) {
                     console.log('err: ', err);
                     return;
@@ -23,11 +23,11 @@ function createUserFileStructure(key) {
             });
 
             fs.mkdirSync(
-                path.join(`${__dirname}`, '..', `../public/users/${userDirName}`, 'photos'),
+                path.join(`${__dirname}`, '..', `../static/users/${userDirName}`, 'photos'),
             );
 
             fs.mkdirSync(
-                path.join(`${__dirname}`, '..', `../public/users/${userDirName}`, 'videos'),
+                path.join(`${__dirname}`, '..', `../static/users/${userDirName}`, 'videos'),
             );
         }
     } catch (error) {
@@ -52,7 +52,7 @@ function uploadUserFiles(key, category, data) {
             const fileHash = `${v4()}.${file.name.split('.').pop()}`;
 
             file.mv(
-                path.join(`${__dirname}`, '..', `../public/users/${key}/${category}`, fileHash),
+                path.join(`${__dirname}`, '..', `../static/users/${key}/${category}`, fileHash),
             );
 
             hashes.push(fileHash);
