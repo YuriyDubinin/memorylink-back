@@ -5,7 +5,7 @@ const UserController = require(dir.controllers + '/user.controller');
 const userRoutes = Router();
 
 userRoutes.get('/list', UserController.getAllUsers);
-userRoutes.get('/user', UserController.getUserByKey);
+userRoutes.get('/user', UserController.getUserByCompositeKey);
 userRoutes.post('/user', UserController.createUser);
 userRoutes.put('/user', UserController.updateUserById);
 userRoutes.delete('/user', UserController.deleteUserById);

@@ -19,11 +19,12 @@ class UserService {
     /**
      * @description
      * The service method to get user by key & prepares it.
-     * @param {string} - Unique user key.
+     * @param {compositeKey} - Unique user key.
      * @returns {object} The object of user.
      */
-    async getUserByKey(key) {
-        const user = await UserModel.getUserByKey(key);
+    async getUserByCompositeKey(compositeKey) {
+        const id = parseInt(compositeKey.split('id=')[1]);
+        const user = await UserModel.getUserById(id);
 
         if (!user.length) {
             return null;

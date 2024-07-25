@@ -15,12 +15,12 @@ class UserModel {
 
     /**
      * @description
-     * Fetch user by key from database.
-     * @param {string} - Unique user key.
+     * Fetch user by id from database.
+     * @param {number} - Unique user id.
      * @returns {Promise<object[]>} A promise that resolves to an array with one object inside.
      */
-    async getUserByKey(key) {
-        const query = await db('users').where({key});
+    async getUserById(id) {
+        const query = await db('users').where({id});
 
         return query;
     }

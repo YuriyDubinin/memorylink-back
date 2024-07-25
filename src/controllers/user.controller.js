@@ -41,11 +41,11 @@ class UserController {
      * @param {function} - The next middlwares function in the application's requestresponce cicle.
      * @returns {Promise<void>} A promise that resolves to void.
      */
-    async getUserByKey(req, res, passToNext) {
-        const {key} = req.query;
+    async getUserByCompositeKey(req, res, passToNext) {
+        const {compositeKey} = req.query;
 
         try {
-            const user = await UserService.getUserByKey(key);
+            const user = await UserService.getUserByCompositeKey(compositeKey);
 
             if (!user) {
                 return passToNext(new AppError('User not found', STATUS_CODES.NOT_FOUND));
