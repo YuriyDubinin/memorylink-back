@@ -39,7 +39,7 @@ function createUserFileStructure(key) {
             console.log(`User directory with name ${userDirName} already exist.`);
         }
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 }
 
@@ -89,7 +89,7 @@ function deleteUserFileStructureByKey(key) {
             console.log(`User directory ${userDirName} does not exist.`);
         }
     } catch (error) {
-        console.log(error)
+        console.error(error);
     }
 }
 

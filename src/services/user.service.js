@@ -1,10 +1,9 @@
 const dir = require('../helpers/dirConfig');
-const CryptoJS = require('crypto-js');
 const UserModel = require(dir.models + '/user.model');
 const {createUserFileStructure, uploadUserFiles, deleteUserFileStructureByKey} = require(
     dir.helpers + '/fileSystem',
 );
-const {countStringBytes} = require(dir.helpers + '/utils');
+const {v4} = require('uuid');
 
 class UserService {
     /**
@@ -53,21 +52,10 @@ class UserService {
      * @returns {object} The object of user.
      */
     async createUser(name, surname, patronymic, phone, email, address, photos, videos) {
-        const specialData = {name, surname, phone};
-        const key = CryptoJS.AES.encrypt(
-            JSON.stringify(specialData),
-            process.env.ENCRYPTION_SALT_KEY_1,
-        )
-            .toString()
-            .replace(/[//]/g, process.env.ENCRYPTION_SALT_KEY_2);
-        const keyBytesLength = countStringBytes(key);
+        const key = v4();
 
         let photohashes;
         let videohahses;
-
-        if (keyBytesLength > 254) {
-            return null;
-        }
 
         // Additional conversion of photos & to array & saved in in the desired directory
         if (photos) {
