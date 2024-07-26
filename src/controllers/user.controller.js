@@ -3,7 +3,14 @@ const UserService = require(dir.services + '/user.service');
 const {AppError} = require(dir.helpers + '/error');
 const {STATUS_CODES} = require(dir.helpers + '/constants');
 const {sendResponse} = require(dir.helpers + '/utils');
-const {validator, userCreateScheme, userUpdateScheme} = require(dir.helpers + '/validation');
+const {
+    validator,
+    userGetByCompositeKeySheme,
+    userCreateScheme,
+    userUpdateScheme,
+    userDeleteByIdSheme,
+    userDeleteByKeySheme,
+} = require(dir.helpers + '/validation');
 
 class UserController {
     /**
@@ -44,6 +51,15 @@ class UserController {
      */
     async getUserByCompositeKey(req, res, passToNext) {
         const {compositeKey} = req.query;
+
+        const validationResponse = validator.validate({compositeKey}, userGetByCompositeKeySheme);
+
+        if (validationResponse !== true) {
+            return passToNext(
+                new AppError(validationResponse[0].message, STATUS_CODES.BAD_REQUEST),
+                validationResponse[0],
+            );
+        }
 
         try {
             const user = await UserService.getUserByCompositeKey(compositeKey);
@@ -89,7 +105,11 @@ class UserController {
 
         if (validationResponse !== true) {
             return passToNext(
-                new AppError(validationResponse[0].message, STATUS_CODES.BAD_REQUEST),
+                new AppError(
+                    validationResponse[0].message,
+                    STATUS_CODES.BAD_REQUEST,
+                    validationResponse[0],
+                ),
             );
         }
 
@@ -154,7 +174,11 @@ class UserController {
 
         if (validationResponse !== true) {
             return passToNext(
-                new AppError(validationResponse[0].message, STATUS_CODES.BAD_REQUEST),
+                new AppError(
+                    validationResponse[0].message,
+                    STATUS_CODES.BAD_REQUEST,
+                    validationResponse[0],
+                ),
             );
         }
 
@@ -203,6 +227,18 @@ class UserController {
     async deleteUserById(req, res, passToNext) {
         const {id} = req.query;
 
+        const validationResponse = validator.validate({id}, userDeleteByIdSheme);
+
+        if (validationResponse !== true) {
+            return passToNext(
+                new AppError(
+                    validationResponse[0].message,
+                    STATUS_CODES.BAD_REQUEST,
+                    validationResponse[0],
+                ),
+            );
+        }
+
         try {
             const result = await UserService.deleteUserById(id);
 
@@ -234,6 +270,18 @@ class UserController {
      */
     async deleteUserByKey(req, res, passToNext) {
         const {key} = req.query;
+
+        const validationResponse = validator.validate({key}, userDeleteByKeySheme);
+
+        if (validationResponse !== true) {
+            return passToNext(
+                new AppError(
+                    validationResponse[0].message,
+                    STATUS_CODES.BAD_REQUEST,
+                    validationResponse[0],
+                ),
+            );
+        }
 
         try {
             const result = await UserService.deleteUserByKey(key);

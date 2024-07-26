@@ -3,7 +3,6 @@ const fs = require('fs');
 const fsPromises = require('fs/promises');
 const path = require('path');
 const {v4} = require('uuid');
-const {AppError} = require(dir.helpers + '/error');
 
 /**
  * @description
@@ -15,9 +14,9 @@ function createUserFileStructure(key) {
     const userDirName = key;
 
     try {
-        if (!fs.existsSync(path.join(`${__dirname}/users`, userDirName))) {
+        if (!fs.existsSync(path.join(dir.static + '/users', userDirName))) {
             // Creating the user's main directory
-            fs.mkdirSync(path.join(`${__dirname}`, '..', '../static/users', userDirName), (err) => {
+            fs.mkdirSync(path.join(dir.static + '/users', userDirName), (err) => {
                 if (err) {
                     console.log('err: ', err);
                     return;
@@ -25,14 +24,10 @@ function createUserFileStructure(key) {
             });
 
             // Creating users photos directory
-            fs.mkdirSync(
-                path.join(`${__dirname}`, '..', `../static/users/${userDirName}`, 'photos'),
-            );
+            fs.mkdirSync(path.join(dir.static + `/users/${userDirName}`, 'photos'));
 
             // Creating users videos directory
-            fs.mkdirSync(
-                path.join(`${__dirname}`, '..', `../static/users/${userDirName}`, 'videos'),
-            );
+            fs.mkdirSync(path.join(dir.static + `/users/${userDirName}`, 'videos'));
 
             console.log(`User directory structure for ${userDirName} has been created.`);
         } else {
@@ -57,7 +52,7 @@ function uploadUserFiles(key, category, data) {
     data.map((file) => {
         const fileHash = `${v4()}.${file.name.split('.').pop()}`;
 
-        file.mv(path.join(`${__dirname}`, '..', `../static/users/${key}/${category}`, fileHash));
+        file.mv(path.join(dir.static, `/users/${key}/${category}`, fileHash));
 
         hashes.push(fileHash);
     });
@@ -73,7 +68,7 @@ function uploadUserFiles(key, category, data) {
  */
 function deleteUserFileStructureByKey(key) {
     const userDirName = key;
-    const userDirPath = path.join(__dirname, '..', '../static/users', userDirName);
+    const userDirPath = path.join(dir.static, '/users', userDirName);
 
     try {
         if (fs.existsSync(userDirPath)) {
