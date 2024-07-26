@@ -3,6 +3,7 @@ const UserService = require(dir.services + '/user.service');
 const {AppError} = require(dir.helpers + '/error');
 const {STATUS_CODES} = require(dir.helpers + '/constants');
 const {sendResponse} = require(dir.helpers + '/utils');
+const {validator, userCreateScheme, userUpdateScheme} = require(dir.helpers + '/validation');
 
 class UserController {
     /**
@@ -81,6 +82,17 @@ class UserController {
         const photos = req.files?.photos || null;
         const videos = req.files?.videos || null;
 
+        const validationResponse = validator.validate(
+            {name, surname, patronymic, phone, email, address, photos, videos},
+            userCreateScheme,
+        );
+
+        if (validationResponse !== true) {
+            return passToNext(
+                new AppError(validationResponse[0].message, STATUS_CODES.BAD_REQUEST),
+            );
+        }
+
         try {
             const result = await UserService.createUser(
                 name,
@@ -95,7 +107,7 @@ class UserController {
 
             if (!result) {
                 return passToNext(
-                    new AppError('User not сreated', STATUS_CODES.INTERNAL_SERVER_ERROR),
+                    new AppError('User not created', STATUS_CODES.INTERNAL_SERVER_ERROR),
                 );
             }
 
@@ -134,6 +146,17 @@ class UserController {
         const {id, name, surname, patronymic, phone, email, address} = req.body;
         const photos = req.files?.photos || null;
         const videos = req.files?.videos || null;
+
+        const validationResponse = validator.validate(
+            {name, surname, patronymic, phone, email, address, photos, videos},
+            userUpdateScheme,
+        );
+
+        if (validationResponse !== true) {
+            return passToNext(
+                new AppError(validationResponse[0].message, STATUS_CODES.BAD_REQUEST),
+            );
+        }
 
         try {
             const result = await UserService.updateUserById(
