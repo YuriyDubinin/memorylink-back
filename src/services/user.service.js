@@ -76,7 +76,7 @@ class UserService {
             videohahses = uploadUserFiles(key, 'videos', videos);
         }
 
-        createUserFileStructure(key);
+        await createUserFileStructure(key);
 
         const result = await UserModel.createUser(
             key,

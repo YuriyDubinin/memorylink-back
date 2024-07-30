@@ -83,14 +83,9 @@ class UserController {
     /**
      * @description
      * This controller method to create user.
-     * @param {string} name - User name.
-     * @param {string} surname - User surname.
-     * @param {string} patronymic - User patronymic.
-     * @param {string} phone - User phone.
-     * @param {string} email - User email.
-     * @param {string} address - User address.
-     * @param {Array<string>} photos- An array of hashes with users photos.
-     * @param {Array<string>} address - An array of hashes with users videos.
+     * @param {object} req - The request object.
+     * @param {object} res - The response object.
+     * @param {function} - The next middlwares function in the application's requestresponce cicle.
      * @returns {Promise<void>} A promise that resolves to void.
      */
     async createUser(req, res, passToNext) {
@@ -151,15 +146,9 @@ class UserController {
     /**
      * @description
      * This controller method to update user by id.
-     * @param {number} id - Unique user id.
-     * @param {string} name - User name.
-     * @param {string} surname - User surname.
-     * @param {string} patronymic - User patronymic.
-     * @param {string} phone - User phone.
-     * @param {string} email - User email.
-     * @param {string} address - User address.
-     * @param {Array<string>} photos - An array of hashes with users photos.
-     * @param {Array<string>} address - An array of hashes with users videos.
+     * @param {object} req - The request object.
+     * @param {object} res - The response object.
+     * @param {function} - The next middlwares function in the application's requestresponce cicle.
      * @returns {Promise<void>} A promise that resolves to void.
      */
     async updateUserById(req, res, passToNext) {

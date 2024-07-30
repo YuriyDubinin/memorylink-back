@@ -8,9 +8,7 @@ class UserModel {
      * @returns {Promise<object[]>} A promise that resolves to an array of user objects.
      */
     async getAllUsers() {
-        const query = await db('users');
-
-        return query;
+        return await db('users');
     }
 
     /**
@@ -20,9 +18,7 @@ class UserModel {
      * @returns {Promise<object[]>} A promise that resolves to an array with one object inside.
      */
     async getUserById(id) {
-        const query = await db('users').where({id});
-
-        return query;
+        return await db('users').where({id});
     }
 
     /**
@@ -91,9 +87,9 @@ class UserModel {
      * @returns {Promise<object[]>} A promise that resolves to an array with one object inside.
      */
     async deleteUserById(id) {
-        const query = await db('users').where({id}).del();
+        return await db('users').where({id}).del();
 
-        return query;
+        
     }
 
     /**
@@ -103,9 +99,7 @@ class UserModel {
      * @returns {Promise<object[]>} A promise that resolves to an array with one object inside.
      */
     async deleteUserByKey(key) {
-        const query = await db('users').where({key}).del();
-
-        return query;
+        return await db('users').where({key}).del();
     }
 }
 

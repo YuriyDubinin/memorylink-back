@@ -1,37 +1,37 @@
 const dir = require('../helpers/dirConfig');
-const fs = require('fs');
-const fsPromises = require('fs/promises');
+const fs = require('fs/promises');
 const path = require('path');
-const {v4} = require('uuid');
+const {uuid} = require('uuid');
 
 /**
  * @description
  * Creates a file structure for the user.
  * @param {string} key - Unique user key.
- * @returns {void} - This function does not return a value.
+ * @returns {void} This function does not return a value.
  */
-function createUserFileStructure(key) {
-    const userDirName = key;
+async function createUserFileStructure(key) {
+    const userDirPath = path.join(dir.static, 'users', key);
 
     try {
-        if (!fs.existsSync(path.join(dir.static + '/users', userDirName))) {
+        // Check the existence & access rights to the name directory
+        try {
+            await fs.access(path.join(dir.static, 'users'));
+        } catch (accessError) {
+            console.error(`Access error: ${accessError.message}`);
+            return;
+        }
+
+        if (!(await fs.access(userDirPath).then(() => true).catch(() => false))) {
             // Creating the user's main directory
-            fs.mkdirSync(path.join(dir.static + '/users', userDirName), (err) => {
-                if (err) {
-                    console.log('err: ', err);
-                    return;
-                }
-            });
+            await fs.mkdir(userDirPath, { recursive: true });
 
-            // Creating users photos directory
-            fs.mkdirSync(path.join(dir.static + `/users/${userDirName}`, 'photos'));
+            // Creating users photos and videos directories
+            await fs.mkdir(path.join(userDirPath, 'photos'));
+            await fs.mkdir(path.join(userDirPath, 'videos'));
 
-            // Creating users videos directory
-            fs.mkdirSync(path.join(dir.static + `/users/${userDirName}`, 'videos'));
-
-            console.log(`User directory structure for ${userDirName} has been created.`);
+            console.log(`User directory structure for ${key} has been created.`);
         } else {
-            console.log(`User directory with name ${userDirName} already exist.`);
+            console.log(`User directory with name ${key} already exists.`);
         }
     } catch (error) {
         console.error(error);
@@ -46,16 +46,21 @@ function createUserFileStructure(key) {
  * @param {Array} data - Data array.
  * @returns {Array<string>} Array of hashes.
  */
-function uploadUserFiles(key, category, data) {
+async function uploadUserFiles(key, category, data) {
     const hashes = [];
 
-    data.map((file) => {
-        const fileHash = `${v4()}.${file.name.split('.').pop()}`;
+    try {
+        for (const file of data) {
+            const fileHash = `${v4()}.${file.name.split('.').pop()}`;
+            const filePath = path.join(dir.static, 'users', key, category, fileHash);
 
-        file.mv(path.join(dir.static, `/users/${key}/${category}`, fileHash));
+            await file.mv(filePath);
 
-        hashes.push(fileHash);
-    });
+            hashes.push(fileHash);
+        }
+    } catch (error) {
+        console.error(error);
+    }
 
     return hashes;
 }
@@ -66,22 +71,21 @@ function uploadUserFiles(key, category, data) {
  * @param {string} key - Unique user key.
  * @returns {void} - This function does not return a value.
  */
-function deleteUserFileStructureByKey(key) {
-    const userDirName = key;
-    const userDirPath = path.join(dir.static, '/users', userDirName);
+async function deleteUserFileStructureByKey(key) {
+    const userDirPath = path.join(dir.static, '/users', key);
 
     try {
-        if (fs.existsSync(userDirPath)) {
+        if (await fs.access(userDirPath).then(() => true).catch(() => false)) {
             // Delete nested directories
-            fsPromises.rm(path.join(userDirPath, 'photos'), {recursive: true});
-            fsPromises.rm(path.join(userDirPath, 'videos'), {recursive: true});
+            await fs.rm(path.join(userDirPath, 'photos'), {recursive: true, force: true});
+            await fs.rm(path.join(userDirPath, 'videos'), {recursive: true, force: true});
 
-            // Deleting the user's main directory
-            fsPromises.rm(userDirPath, {recursive: true});
+            // Deleting user's main directory
+            await fs.rm(userDirPath, {recursive: true, force: true})
 
-            console.log(`User directory structure for ${userDirName} has been deleted.`);
+            console.log(`User directory structure for ${key} has been deleted.`);
         } else {
-            console.log(`User directory ${userDirName} does not exist.`);
+            console.log(`User directory ${key} does not exist.`);
         }
     } catch (error) {
         console.error(error);
