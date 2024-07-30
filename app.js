@@ -34,7 +34,7 @@ app.all('*', (req, _, passToNext) => {
 });
 
 app.use((err, req, res, _) => {
-    handleError(err, req, res);
+    handleError(err, req, res, _);
 });
 
 async function runServer() {

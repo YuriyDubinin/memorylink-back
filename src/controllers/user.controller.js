@@ -120,18 +120,16 @@ class UserController {
                 videos,
             );
 
-            if (!result) {
-                return passToNext(
-                    new AppError('User not created', STATUS_CODES.INTERNAL_SERVER_ERROR),
-                );
+            if (result.status === 'fail') {
+                return passToNext(new AppError(result.message, STATUS_CODES.INTERNAL_SERVER_ERROR));
             }
 
-            return sendResponse(
-                res,
-                STATUS_CODES.OK,
-                `User with id ${result.id} created successfully`,
-                result,
-            );
+            if (result.status === 'success') {
+                return sendResponse(res, STATUS_CODES.OK, result.message, {
+                    id: result.id,
+                    key: result.key,
+                });
+            }
         } catch (error) {
             return passToNext(
                 new AppError(

@@ -55,8 +55,14 @@ class UserService {
     async createUser(name, surname, patronymic, phone, email, address, photos, videos) {
         const key = v4();
 
-        let photohashes;
-        let videohahses;
+        let photoshashes;
+        let videoshahses;
+
+        const fsIsCreated = await createUserFileStructure(key);
+
+        if (fsIsCreated && fsIsCreated.status === 'fail') {
+            return {status: 'fail', message: fsIsCreated.message};
+        }
 
         // Additional conversion of photos & to array & saved in in the desired directory
         if (photos) {
@@ -64,7 +70,7 @@ class UserService {
                 photos = [photos];
             }
 
-            photohashes = uploadUserFiles(key, 'photos', photos);
+            photoshashes = await uploadUserFiles(key, 'photos', photos);
         }
 
         // Additional conversion of videos & to array & saved in in the desired directory
@@ -73,12 +79,10 @@ class UserService {
                 videos = [videos];
             }
 
-            videohahses = uploadUserFiles(key, 'videos', videos);
+            videoshahses = await uploadUserFiles(key, 'videos', videos);
         }
 
-        await createUserFileStructure(key);
-
-        const result = await UserModel.createUser(
+        const createdUser = await UserModel.createUser(
             key,
             name,
             surname,
@@ -86,15 +90,20 @@ class UserService {
             phone,
             email,
             address,
-            JSON.stringify(photohashes),
-            JSON.stringify(videohahses),
+            JSON.stringify(photoshashes),
+            JSON.stringify(videoshahses),
         );
 
-        if (!result.length) {
-            return null;
+        if (!createdUser.length) {
+            return {status: 'fail', message: 'Error recording user'};
         }
 
-        return {id: result[0], key};
+        return {
+            status: 'success',
+            message: `User with id ${createdUser[0]} created successfully`,
+            id: createdUser[0],
+            key,
+        };
     }
 
     /**

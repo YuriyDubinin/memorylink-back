@@ -88,8 +88,6 @@ class UserModel {
      */
     async deleteUserById(id) {
         return await db('users').where({id}).del();
-
-        
     }
 
     /**
