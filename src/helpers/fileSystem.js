@@ -81,9 +81,13 @@ async function uploadUserFiles(key, category, data) {
         }
     } catch (error) {
         console.error(error);
+
+        return {status: 'fail', message: 'Error while downloading files'};
     }
 
-    return hashes;
+    console.log(`Users ${category}'s uploaded successfully`);
+
+    return {status: 'success', message: 'Files uploaded successfully', hashes};
 }
 
 /**

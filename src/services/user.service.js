@@ -55,13 +55,13 @@ class UserService {
     async createUser(name, surname, patronymic, phone, email, address, photos, videos) {
         const key = v4();
 
-        let photoshashes;
-        let videoshahses;
+        let photoUploadResult = [];
+        let videoUploadResult = [];
 
-        const fsIsCreated = await createUserFileStructure(key);
+        const fsCreationResult = await createUserFileStructure(key);
 
-        if (fsIsCreated && fsIsCreated.status === 'fail') {
-            return {status: 'fail', message: fsIsCreated.message};
+        if (fsCreationResult && fsCreationResult.status === 'fail') {
+            return {status: 'fail', message: fsCreationResult.message};
         }
 
         // Additional conversion of photos & to array & saved in in the desired directory
@@ -70,7 +70,11 @@ class UserService {
                 photos = [photos];
             }
 
-            photoshashes = await uploadUserFiles(key, 'photos', photos);
+            photoUploadResult = await uploadUserFiles(key, 'photos', photos);
+
+            if (photoUploadResult && photoUploadResult.status === 'fail') {
+                return {status: 'fail', message: photoUploadResult.message};
+            }
         }
 
         // Additional conversion of videos & to array & saved in in the desired directory
@@ -79,7 +83,11 @@ class UserService {
                 videos = [videos];
             }
 
-            videoshahses = await uploadUserFiles(key, 'videos', videos);
+            videoUploadResult = await uploadUserFiles(key, 'videos', videos);
+
+            if (videoUploadResult && videoUploadResult.status === 'fail') {
+                return {status: 'fail', message: videoUploadResult.message};
+            }
         }
 
         const createdUser = await UserModel.createUser(
@@ -90,8 +98,8 @@ class UserService {
             phone,
             email,
             address,
-            JSON.stringify(photoshashes),
-            JSON.stringify(videoshahses),
+            JSON.stringify(photoUploadResult.hashes || []),
+            JSON.stringify(photoUploadResult.hashes || []),
         );
 
         if (!createdUser.length) {
