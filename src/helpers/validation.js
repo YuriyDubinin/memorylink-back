@@ -18,16 +18,15 @@ const userCreateScheme = {
 };
 
 const userUpdateScheme = {
-    id: {type: 'number', integer: true, optional: false},
-    name: {type: 'string', optional: true, min: 2},
-    surname: {type: 'string', optional: true, min: 2},
+    key: {type: 'string', optional: false, min: 30},
+    name: {type: 'string', optional: true},
+    surname: {type: 'string', optional: true},
     patronymic: {type: 'string', optional: true},
-    min: 2,
-    phone: {type: 'string', optional: true, min: 10},
+    phone: {type: 'string', optional: true},
     email: {type: 'email', optional: true},
-    address: {type: 'string', optional: true, min: 20},
-    // photos: {type: 'array', optional: true},
-    // videos: {type: 'array', optional: true},
+    address: {type: 'string', optional: true},
+    photos: {type: 'object', optional: true},
+    videos: {type: 'object', optional: true},
 };
 
 const userDeleteByIdSheme = {

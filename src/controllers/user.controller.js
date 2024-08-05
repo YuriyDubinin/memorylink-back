@@ -94,7 +94,16 @@ class UserController {
         const videos = req.files?.videos || null;
 
         const validationResponse = validator.validate(
-            {name, surname, patronymic, phone, email, address, photos, videos},
+            {
+                name,
+                surname,
+                patronymic,
+                phone,
+                email,
+                address,
+                photos,
+                videos,
+            },
             userCreateScheme,
         );
 
@@ -149,13 +158,13 @@ class UserController {
      * @param {function} - The next middlwares function in the application's requestresponce cicle.
      * @returns {Promise<void>} A promise that resolves to void.
      */
-    async updateUserById(req, res, passToNext) {
-        const {id, name, surname, patronymic, phone, email, address} = req.body;
+    async updateUserByKey(req, res, passToNext) {
+        const {key, name, surname, patronymic, phone, email, address} = req.body;
         const photos = req.files?.photos || null;
         const videos = req.files?.videos || null;
 
         const validationResponse = validator.validate(
-            {name, surname, patronymic, phone, email, address, photos, videos},
+            {key, name, surname, patronymic, phone, email, address, photos, videos},
             userUpdateScheme,
         );
 
@@ -170,72 +179,28 @@ class UserController {
         }
 
         try {
-            const result = await UserService.updateUserById(
-                id,
+            const result = await UserService.updateUserByKey(
+                key,
                 name,
                 surname,
                 patronymic,
                 phone,
                 email,
                 address,
+                photos,
+                videos,
             );
 
-            if (!result) {
-                return passToNext(
-                    new AppError(`User with id ${id} not found.`, STATUS_CODES.NOT_FOUND),
-                );
+            if (result.status === 'fail') {
+                return passToNext(new AppError(result.message, STATUS_CODES.INTERNAL_SERVER_ERROR));
             }
 
-            return sendResponse(
-                res,
-                STATUS_CODES.OK,
-                `User with id ${id} updated successfully`,
-                result,
-            );
-        } catch (error) {
-            return passToNext(
-                new AppError(
-                    error.message || 'Internal Server Error',
-                    error.status || STATUS_CODES.INTERNAL_SERVER_ERROR,
-                    error.response || error,
-                ),
-            );
-        }
-    }
-
-    /**
-     * @description
-     * This controller method to delete user by id.
-     * @param {object} req - The request object.
-     * @param {object} res - The response object.
-     * @param {function} - The next middlwares function in the application's requestresponce cicle.
-     * @returns {Promise<void>} A promise that resolves to void.
-     */
-    async deleteUserById(req, res, passToNext) {
-        const {id} = req.query;
-
-        const validationResponse = validator.validate({id}, userDeleteByIdSheme);
-
-        if (validationResponse !== true) {
-            return passToNext(
-                new AppError(
-                    validationResponse[0].message,
-                    STATUS_CODES.BAD_REQUEST,
-                    validationResponse[0],
-                ),
-            );
-        }
-
-        try {
-            const result = await UserService.deleteUserById(id);
-
-            if (!result) {
-                return passToNext(
-                    new AppError(`User with id ${id} not found.`, STATUS_CODES.NOT_FOUND),
-                );
+            if (result.status === 'success') {
+                return sendResponse(res, STATUS_CODES.OK, result.message, {
+                    id: result.id,
+                    key: result.key,
+                });
             }
-
-            return sendResponse(res, STATUS_CODES.OK, `User with id ${id} deleted successfully`);
         } catch (error) {
             return passToNext(
                 new AppError(

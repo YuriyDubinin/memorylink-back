@@ -13,8 +13,18 @@ class UserModel {
 
     /**
      * @description
+     * Fetch user by key from database.
+     * @param {string} key - Unique user key.
+     * @returns {Promise<object[]>} A promise that resolves to an array with one object inside.
+     */
+    async getUserByKey(key) {
+        return await db('users').where({key});
+    }
+
+    /**
+     * @description
      * Fetch user by id from database.
-     * @param {number} - Unique user id.
+     * @param {number} id - Unique user id.
      * @returns {Promise<object[]>} A promise that resolves to an array with one object inside.
      */
     async getUserById(id) {
@@ -24,6 +34,7 @@ class UserModel {
     /**
      * @description
      * Create user in database.
+     * @param {Date} createTime - Time since user creation.
      * @param {string} key - Unique user key.
      * @param {string} name - User name.
      * @param {string} surname - User surname.
@@ -35,9 +46,21 @@ class UserModel {
      * @param {Array<string>} address - An array of hashes with users videos.
      * @returns {Promise<object[]>} A promise that resolves to an array with one object inside.
      */
-    async createUser(key, name, surname, patronymic, phone, email, address, photos, videos) {
+    async createUser(
+        createTime,
+        key,
+        name,
+        surname,
+        patronymic,
+        phone,
+        email,
+        address,
+        photos,
+        videos,
+    ) {
         const query = await db('users').insert({
             key,
+            createTime,
             name,
             surname,
             patronymic,
@@ -54,7 +77,8 @@ class UserModel {
     /**
      * @description
      * Update user in database by id.
-     * @param {id} key - Unique user key.
+     * @param {Date} updateTime - User update time.
+     * @param {string} key - Unique user key.
      * @param {string} name - User name.
      * @param {string} surname - User surname.
      * @param {string} patronymic - User patronymic.
@@ -65,8 +89,20 @@ class UserModel {
      * @param {Array<string>} address - An array of hashes with users videos.
      * @returns {Promise<object[]>} A promise that resolves to an array with one object inside.
      */
-    async updateUserById(id, name, surname, patronymic, phone, email, address, photos, videos) {
-        const query = await db('users').where({id}).update({
+    async updateUserByKey(
+        updateTime,
+        key,
+        name,
+        surname,
+        patronymic,
+        phone,
+        email,
+        address,
+        photos,
+        videos,
+    ) {
+        const query = await db('users').where({key}).update({
+            updateTime,
             name,
             surname,
             patronymic,
@@ -78,16 +114,6 @@ class UserModel {
         });
 
         return query;
-    }
-
-    /**
-     * @description
-     * Delete user by id from database.
-     * @param {id} - Unique user id.
-     * @returns {Promise<object[]>} A promise that resolves to an array with one object inside.
-     */
-    async deleteUserById(id) {
-        return await db('users').where({id}).del();
     }
 
     /**

@@ -1,3 +1,4 @@
+const moment = require('moment');
 const dir = require('../helpers/dirConfig');
 const UserModel = require(dir.models + '/user.model');
 const {createUserFileStructure, uploadUserFiles, deleteUserFileStructureByKey} = require(
@@ -54,7 +55,7 @@ class UserService {
      */
     async createUser(name, surname, patronymic, phone, email, address, photos, videos) {
         const key = v4();
-
+        const createTime = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
         let photoUploadResult = [];
         let videoUploadResult = [];
 
@@ -91,6 +92,7 @@ class UserService {
         }
 
         const createdUser = await UserModel.createUser(
+            createTime,
             key,
             name,
             surname,
@@ -99,7 +101,7 @@ class UserService {
             email,
             address,
             JSON.stringify(photoUploadResult.hashes || []),
-            JSON.stringify(photoUploadResult.hashes || []),
+            JSON.stringify(videoUploadResult.hashes || []),
         );
 
         if (!createdUser.length) {
@@ -117,7 +119,7 @@ class UserService {
     /**
      * @description
      * This service method to create user.
-     * @param {number} id - Unique user id.
+     * @param {number} key - Unique user id.
      * @param {string} name - User name.
      * @param {string} surname - User surname.
      * @param {string} patronymic - User patronymic.
@@ -128,40 +130,66 @@ class UserService {
      * @param {Array<string>} address - An array of hashes with users videos.
      * @returns {object} The object of user.
      */
-    async updateUserById(id, name, surname, patronymic, phone, email, address, photos, videos) {
-        const result = await UserModel.updateUserById(
-            id,
+    async updateUserByKey(key, name, surname, patronymic, phone, email, address, photos, videos) {
+        const updateTime = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
+        let photoUploadResult = [];
+        let videoUploadResult = [];
+
+        // User presence check
+        const user = await UserModel.getUserByKey(key);
+
+        if (!user.length) {
+            return {status: 'fail', message: 'User not exists'};
+        }
+
+        // Additional conversion of photos & to array & saved in in the desired directory
+        if (photos) {
+            if (!Array.isArray(photos)) {
+                photos = [photos];
+            }
+
+            photoUploadResult = await uploadUserFiles(key, 'photos', photos);
+
+            if (photoUploadResult && photoUploadResult.status === 'fail') {
+                return {status: 'fail', message: photoUploadResult.message};
+            }
+        }
+
+        // Additional conversion of videos & to array & saved in in the desired directory
+        if (videos) {
+            if (!Array.isArray(videos)) {
+                videos = [videos];
+            }
+
+            videoUploadResult = await uploadUserFiles(key, 'videos', videos);
+
+            if (videoUploadResult && videoUploadResult.status === 'fail') {
+                return {status: 'fail', message: videoUploadResult.message};
+            }
+        }
+
+        const updatedUser = await UserModel.updateUserByKey(
+            updateTime,
+            key,
             name,
             surname,
             patronymic,
             phone,
             email,
             address,
-            photos,
-            videos,
+            JSON.stringify(photoUploadResult.hashes || []),
+            JSON.stringify(photoUploadResult.hashes || []),
         );
 
-        if (!result) {
-            return null;
+        if (!updatedUser) {
+            return {status: 'fail', message: 'Error recording user'};
         }
 
-        return result;
-    }
-
-    /**
-     * @description
-     * The service method to delete user by id.
-     * @param {string} - Unique user key.
-     * @returns {object} The object of user.
-     */
-    async deleteUserById(id) {
-        const result = await UserModel.deleteUserById(id);
-
-        if (!result) {
-            return null;
-        }
-
-        return result;
+        return {
+            status: 'success',
+            message: `User with key ${key} updated successfully`,
+            key,
+        };
     }
 
     /**
