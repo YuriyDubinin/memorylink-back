@@ -178,7 +178,7 @@ class UserService {
             email,
             address,
             JSON.stringify(photoUploadResult.hashes || []),
-            JSON.stringify(photoUploadResult.hashes || []),
+            JSON.stringify(videoUploadResult.hashes || []),
         );
 
         if (!updatedUser) {

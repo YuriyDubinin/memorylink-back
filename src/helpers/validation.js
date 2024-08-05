@@ -25,8 +25,8 @@ const userUpdateScheme = {
     phone: {type: 'string', optional: true},
     email: {type: 'email', optional: true},
     address: {type: 'string', optional: true},
-    photos: {type: 'object', optional: true},
-    videos: {type: 'object', optional: true},
+    // photos: {type: 'object', optional: true},
+    // videos: {type: 'object', optional: true},
 };
 
 const userDeleteByIdSheme = {
