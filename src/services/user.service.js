@@ -210,7 +210,7 @@ class UserService {
     /**
      * @description
      * The service method to delete user by key.
-     * @param {string} - Unique user key.
+     * @param {string} key - Unique user key.
      * @returns {object} The object of user.
      */
     async deleteUserByKey(key) {
@@ -223,6 +223,31 @@ class UserService {
         }
 
         return result;
+    }
+
+    /**
+     * @description
+     * The service method to check user by composite key.
+     * @param {string} compositeKey - Unique user key.
+     * @returns {object} The object containing status.
+     */
+    async checkUserByCompositeKey(compositeKey) {
+        const id = parseInt(compositeKey.split('id=')[1]);
+        const user = await UserModel.getUserById(id);
+
+        if (!user.length) {
+            return {
+                status: 'fail',
+                message: `User not found`,
+                
+            };
+        }
+
+        return {
+            status: 'success',
+            message: `User check successfully`,
+            
+        };
     }
 }
 

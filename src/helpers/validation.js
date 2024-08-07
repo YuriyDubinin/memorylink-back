@@ -35,10 +35,15 @@ const userDeleteByKeySheme = {
     key: {type: 'string', optional: false, min: 30},
 };
 
+const userCheckByCompositeKeySheme = {
+    compositeKey: {type: 'string', optional: false},
+};
+
 module.exports = {
     validator,
     userGetByCompositeKeySheme,
     userCreateScheme,
     userUpdateScheme,
     userDeleteByKeySheme,
+    userCheckByCompositeKeySheme
 };

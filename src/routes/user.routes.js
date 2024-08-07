@@ -9,5 +9,7 @@ userRoutes.get('/user', UserController.getUserByCompositeKey);
 userRoutes.post('/user', UserController.createUser);
 userRoutes.put('/user', UserController.updateUserByKey);
 userRoutes.delete('/user/key', UserController.deleteUserByKey);
+userRoutes.get('/user/check', UserController.checkUserByCompositeKey);
+// userRoutes.delete('/user/login', UserController.deleteUserByKey);
 
 module.exports = userRoutes;

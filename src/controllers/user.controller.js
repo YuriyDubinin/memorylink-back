@@ -9,6 +9,7 @@ const {
     userCreateScheme,
     userUpdateScheme,
     userDeleteByKeySheme,
+    userCheckByCompositeKeySheme,
 } = require(dir.helpers + '/validation');
 
 class UserController {
@@ -45,7 +46,7 @@ class UserController {
      * This controller method to fetch user by key.
      * @param {object} req - The request object.
      * @param {object} res - The response object.
-     * @param {function} - The next middlwares function in the application's requestresponce cicle.
+     * @param {function} passToNext - The next middlwares function in the application's requestresponce cicle.
      * @returns {Promise<void>} A promise that resolves to void.
      */
     async getUserByCompositeKey(req, res, passToNext) {
@@ -84,7 +85,7 @@ class UserController {
      * This controller method to create user.
      * @param {object} req - The request object.
      * @param {object} res - The response object.
-     * @param {function} - The next middlwares function in the application's requestresponce cicle.
+     * @param {function} passToNext - The next middlwares function in the application's requestresponce cicle.
      * @returns {Promise<void>} A promise that resolves to void.
      */
     async createUser(req, res, passToNext) {
@@ -156,7 +157,7 @@ class UserController {
      * This controller method to update user by id.
      * @param {object} req - The request object.
      * @param {object} res - The response object.
-     * @param {function} - The next middlwares function in the application's requestresponce cicle.
+     * @param {function} passToNext - The next middlwares function in the application's requestresponce cicle.
      * @returns {Promise<void>} A promise that resolves to void.
      */
     async updateUserByKey(req, res, passToNext) {
@@ -219,7 +220,7 @@ class UserController {
      * This controller method to delete user by key.
      * @param {object} req - The request object.
      * @param {object} res - The response object.
-     * @param {function} - The next middlwares function in the application's requestresponce cicle.
+     * @param {function} passToNext - The next middlwares function in the application's requestresponce cicle.
      * @returns {Promise<void>} A promise that resolves to void.
      */
     async deleteUserByKey(req, res, passToNext) {
@@ -247,6 +248,46 @@ class UserController {
             }
 
             return sendResponse(res, STATUS_CODES.OK, `User with key ${key} deleted successfully`);
+        } catch (error) {
+            return passToNext(
+                new AppError(
+                    error.message || 'Internal Server Error',
+                    error.status || STATUS_CODES.INTERNAL_SERVER_ERROR,
+                    error.response || error,
+                ),
+            );
+        }
+    }
+
+    /**
+     * @description
+     * This controller method to check if a password is needed to log in.
+     * @param {object} req - The request object.
+     * @param {object} res - The response object.
+     * @param {function} passToNext - The next middlwares function in the application's requestresponce cicle.
+     * @returns {Promise<void>} A promise that resolves to void.
+     */
+    async checkUserByCompositeKey(req, res, passToNext) {
+        const {compositeKey} = req.query;
+
+        const validationResponse = validator.validate({compositeKey}, userCheckByCompositeKeySheme);
+
+        if (validationResponse !== true) {
+            console.log('here')
+            return passToNext(
+                new AppError(validationResponse[0].message, STATUS_CODES.BAD_REQUEST),
+                validationResponse[0],
+            );
+        }
+
+        try {
+            const result = await UserService.checkUserByCompositeKey(compositeKey);
+
+            if (result.status === 'fail') {
+                return passToNext(new AppError(result.message, STATUS_CODES.NOT_FOUND));
+            }
+
+            return sendResponse(res, STATUS_CODES.OK, 'User check successfully', result);
         } catch (error) {
             return passToNext(
                 new AppError(
