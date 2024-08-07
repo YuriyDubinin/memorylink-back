@@ -8,7 +8,6 @@ const {
     userGetByCompositeKeySheme,
     userCreateScheme,
     userUpdateScheme,
-    userDeleteByIdSheme,
     userDeleteByKeySheme,
 } = require(dir.helpers + '/validation');
 
@@ -89,12 +88,13 @@ class UserController {
      * @returns {Promise<void>} A promise that resolves to void.
      */
     async createUser(req, res, passToNext) {
-        const {name, surname, patronymic, phone, email, address} = req.body;
+        const {password, name, surname, patronymic, phone, email, address} = req.body;
         const photos = req.files?.photos || null;
         const videos = req.files?.videos || null;
 
         const validationResponse = validator.validate(
             {
+                password,
                 name,
                 surname,
                 patronymic,
@@ -119,6 +119,7 @@ class UserController {
 
         try {
             const result = await UserService.createUser(
+                password,
                 name,
                 surname,
                 patronymic,
@@ -159,12 +160,12 @@ class UserController {
      * @returns {Promise<void>} A promise that resolves to void.
      */
     async updateUserByKey(req, res, passToNext) {
-        const {key, name, surname, patronymic, phone, email, address} = req.body;
+        const {password, key, name, surname, patronymic, phone, email, address} = req.body;
         const photos = req.files?.photos || null;
         const videos = req.files?.videos || null;
 
         const validationResponse = validator.validate(
-            {key, name, surname, patronymic, phone, email, address, photos, videos},
+            {password, key, name, surname, patronymic, phone, email, address, photos, videos},
             userUpdateScheme,
         );
 
@@ -180,6 +181,7 @@ class UserController {
 
         try {
             const result = await UserService.updateUserByKey(
+                password,
                 key,
                 name,
                 surname,

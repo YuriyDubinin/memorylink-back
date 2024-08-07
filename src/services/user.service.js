@@ -43,6 +43,7 @@ class UserService {
     /**
      * @description
      * This service method to create user.
+     * @param {string} password - User password.
      * @param {string} name - User name.
      * @param {string} surname - User surname.
      * @param {string} patronymic - User patronymic.
@@ -53,11 +54,11 @@ class UserService {
      * @param {Array<string>} address - An array of hashes with users videos.
      * @returns {object} The object of user.
      */
-    async createUser(name, surname, patronymic, phone, email, address, photos, videos) {
+    async createUser(password, name, surname, patronymic, phone, email, address, photos, videos) {
         const key = v4();
         const createTime = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
-        let photoUploadResult = [];
-        let videoUploadResult = [];
+        let photoUploadResult;
+        let videoUploadResult;
 
         const fsCreationResult = await createUserFileStructure(key);
 
@@ -92,6 +93,7 @@ class UserService {
         }
 
         const createdUser = await UserModel.createUser(
+            password,
             createTime,
             key,
             name,
@@ -100,8 +102,8 @@ class UserService {
             phone,
             email,
             address,
-            JSON.stringify(photoUploadResult.hashes || []),
-            JSON.stringify(videoUploadResult.hashes || []),
+            JSON.stringify(photoUploadResult?.hashes),
+            JSON.stringify(videoUploadResult?.hashes),
         );
 
         if (!createdUser.length) {
@@ -119,6 +121,7 @@ class UserService {
     /**
      * @description
      * This service method to create user.
+     * @param {string} password - User password.
      * @param {number} key - Unique user id.
      * @param {string} name - User name.
      * @param {string} surname - User surname.
@@ -130,10 +133,21 @@ class UserService {
      * @param {Array<string>} address - An array of hashes with users videos.
      * @returns {object} The object of user.
      */
-    async updateUserByKey(key, name, surname, patronymic, phone, email, address, photos, videos) {
+    async updateUserByKey(
+        password,
+        key,
+        name,
+        surname,
+        patronymic,
+        phone,
+        email,
+        address,
+        photos,
+        videos,
+    ) {
         const updateTime = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
-        let photoUploadResult = [];
-        let videoUploadResult = [];
+        let photoUploadResult;
+        let videoUploadResult;
 
         // User presence check
         const user = await UserModel.getUserByKey(key);
@@ -169,6 +183,7 @@ class UserService {
         }
 
         const updatedUser = await UserModel.updateUserByKey(
+            password,
             updateTime,
             key,
             name,
@@ -177,8 +192,8 @@ class UserService {
             phone,
             email,
             address,
-            JSON.stringify(photoUploadResult.hashes || []),
-            JSON.stringify(videoUploadResult.hashes || []),
+            JSON.stringify(photoUploadResult?.hashes),
+            JSON.stringify(videoUploadResult?.hashes),
         );
 
         if (!updatedUser) {

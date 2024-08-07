@@ -34,6 +34,7 @@ class UserModel {
     /**
      * @description
      * Create user in database.
+     * @param {string} password - User password.
      * @param {Date} createTime - Time since user creation.
      * @param {string} key - Unique user key.
      * @param {string} name - User name.
@@ -47,6 +48,7 @@ class UserModel {
      * @returns {Promise<object[]>} A promise that resolves to an array with one object inside.
      */
     async createUser(
+        password,
         createTime,
         key,
         name,
@@ -59,6 +61,7 @@ class UserModel {
         videos,
     ) {
         const query = await db('users').insert({
+            password,
             key,
             createTime,
             name,
@@ -77,6 +80,7 @@ class UserModel {
     /**
      * @description
      * Update user in database by id.
+     * @param {string} password - User password.
      * @param {Date} updateTime - User update time.
      * @param {string} key - Unique user key.
      * @param {string} name - User name.
@@ -90,6 +94,7 @@ class UserModel {
      * @returns {Promise<object[]>} A promise that resolves to an array with one object inside.
      */
     async updateUserByKey(
+        password,
         updateTime,
         key,
         name,
@@ -102,6 +107,7 @@ class UserModel {
         videos,
     ) {
         const query = await db('users').where({key}).update({
+            password,
             updateTime,
             name,
             surname,
@@ -119,7 +125,7 @@ class UserModel {
     /**
      * @description
      * Delete user by key from database.
-     * @param {id} - Unique user key.
+     * @param {string} key - Unique user key.
      * @returns {Promise<object[]>} A promise that resolves to an array with one object inside.
      */
     async deleteUserByKey(key) {

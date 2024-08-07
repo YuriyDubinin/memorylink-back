@@ -7,6 +7,7 @@ const userGetByCompositeKeySheme = {
 };
 
 const userCreateScheme = {
+    password: {type: 'string', optional: true},
     name: {type: 'string', optional: false, min: 2},
     surname: {type: 'string', optional: false, min: 2},
     patronymic: {type: 'string', optional: false, min: 2},
@@ -18,6 +19,7 @@ const userCreateScheme = {
 };
 
 const userUpdateScheme = {
+    password: {type: 'string', optional: true},
     key: {type: 'string', optional: false, min: 30},
     name: {type: 'string', optional: true},
     surname: {type: 'string', optional: true},
@@ -29,10 +31,6 @@ const userUpdateScheme = {
     // videos: {type: 'object', optional: true},
 };
 
-const userDeleteByIdSheme = {
-    id: {type: 'number', integer: true, optional: false},
-};
-
 const userDeleteByKeySheme = {
     key: {type: 'string', optional: false, min: 30},
 };
@@ -42,6 +40,5 @@ module.exports = {
     userGetByCompositeKeySheme,
     userCreateScheme,
     userUpdateScheme,
-    userDeleteByIdSheme,
     userDeleteByKeySheme,
 };
