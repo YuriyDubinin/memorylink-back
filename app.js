@@ -3,8 +3,10 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const dir = require('./src/helpers/dirConfig');
+const {startRequestBot, sendMessageToTargetGroup} = require(dir.bots + '/RequestBot');
 const {delegateCorsOptions} = require(dir.helpers + '/cors');
 const userRoutes = require(dir.routes + '/user.routes');
+const requestRoutes = require(dir.routes + '/request.routes');
 const {AppError, handleError} = require(dir.helpers + '/error');
 const {STATUS_CODES} = require(dir.helpers + '/constants');
 
@@ -22,6 +24,7 @@ app.use('/static', express.static(dir.static));
 
 // Routes
 app.use('/users', cors(delegateCorsOptions), userRoutes);
+app.use('/requests', cors(delegateCorsOptions), requestRoutes);
 
 // Error handling
 app.all('*', (req, _, passToNext) => {
@@ -48,3 +51,6 @@ async function runServer() {
 }
 
 runServer();
+
+// Bots
+startRequestBot();

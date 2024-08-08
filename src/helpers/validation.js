@@ -12,7 +12,7 @@ const userCreateScheme = {
     surname: {type: 'string', optional: false, min: 2},
     patronymic: {type: 'string', optional: false, min: 2},
     phone: {type: 'string', optional: false, min: 10},
-    email: {type: 'email', optional: true},
+    email: {type: 'string', optional: true},
     address: {type: 'string', optional: false, min: 20},
     // photos: {type: 'array', optional: true},
     // videos: {type: 'array', optional: true},
@@ -25,7 +25,7 @@ const userUpdateScheme = {
     surname: {type: 'string', optional: true},
     patronymic: {type: 'string', optional: true},
     phone: {type: 'string', optional: true},
-    email: {type: 'email', optional: true},
+    email: {type: 'string', optional: true},
     address: {type: 'string', optional: true},
     // photos: {type: 'object', optional: true},
     // videos: {type: 'object', optional: true},
@@ -44,6 +44,15 @@ const loginSheme = {
     password: {type: 'string', optional: false},
 };
 
+const requestCreateScheme = {
+    name: {type: 'string', optional: false, min: 2},
+    surname: {type: 'string', optional: false, min: 2},
+    patronymic: {type: 'string', optional: false, min: 2},
+    phone: {type: 'string', optional: false, min: 10},
+    email: {type: 'string', optional: true},
+    text: {type: 'string', optional: false},
+};
+
 module.exports = {
     validator,
     userGetByCompositeKeySheme,
@@ -52,4 +61,5 @@ module.exports = {
     userDeleteByKeySheme,
     userCheckByCompositeKeySheme,
     loginSheme,
+    requestCreateScheme,
 };

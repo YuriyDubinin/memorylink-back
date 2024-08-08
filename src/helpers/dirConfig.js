@@ -10,6 +10,7 @@ const dir = {
     models: path.join(__dirname, '..', 'models'),
     routes: path.join(__dirname, '..', 'routes'),
     services: path.join(__dirname, '..', 'services'),
+    bots: path.join(__dirname, '..', 'bots'),
 };
 
 module.exports = dir;
