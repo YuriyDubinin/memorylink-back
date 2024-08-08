@@ -229,7 +229,7 @@ class UserService {
      * @description
      * The service method to check user by composite key.
      * @param {string} compositeKey - Unique user key.
-     * @returns {object} The object containing status.
+     * @returns {object} The object containing status & message.
      */
     async checkUserByCompositeKey(compositeKey) {
         const id = parseInt(compositeKey.split('id=')[1]);
@@ -239,14 +239,50 @@ class UserService {
             return {
                 status: 'fail',
                 message: `User not found`,
-                
+            };
+        }
+
+        if (user[0].password) {
+            return {
+                status: 'locked',
+                message: `User check successfully`,
+            };
+        }
+
+        return {
+            status: 'free',
+            message: `User check successfully`,
+        };
+    }
+
+    /**
+     * @description
+     * The service method to user login.
+     * @param {string} compositeKey - Unique user key.
+     * @param {string} password - User password.
+     * @returns {object} The object containing status & message.
+     */
+    async login(compositeKey, password) {
+        const id = parseInt(compositeKey.split('id=')[1]);
+        const user = await UserModel.getUserById(id);
+
+        if (!user.length) {
+            return {
+                status: 'fail',
+                message: `User not found`,
+            };
+        }
+
+        if (user[0].password !== password) {
+            return {
+                status: 'fail',
+                message: `Wrong password`,
             };
         }
 
         return {
             status: 'success',
-            message: `User check successfully`,
-            
+            message: `Password is correct`,
         };
     }
 }

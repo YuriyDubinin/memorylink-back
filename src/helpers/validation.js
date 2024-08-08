@@ -39,11 +39,17 @@ const userCheckByCompositeKeySheme = {
     compositeKey: {type: 'string', optional: false},
 };
 
+const loginSheme = {
+    compositeKey: {type: 'string', optional: false},
+    password: {type: 'string', optional: false},
+};
+
 module.exports = {
     validator,
     userGetByCompositeKeySheme,
     userCreateScheme,
     userUpdateScheme,
     userDeleteByKeySheme,
-    userCheckByCompositeKeySheme
+    userCheckByCompositeKeySheme,
+    loginSheme,
 };

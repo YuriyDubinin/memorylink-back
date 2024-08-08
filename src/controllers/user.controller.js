@@ -10,6 +10,7 @@ const {
     userUpdateScheme,
     userDeleteByKeySheme,
     userCheckByCompositeKeySheme,
+    loginSheme,
 } = require(dir.helpers + '/validation');
 
 class UserController {
@@ -51,7 +52,6 @@ class UserController {
      */
     async getUserByCompositeKey(req, res, passToNext) {
         const {compositeKey} = req.query;
-
         const validationResponse = validator.validate({compositeKey}, userGetByCompositeKeySheme);
 
         if (validationResponse !== true) {
@@ -92,7 +92,6 @@ class UserController {
         const {password, name, surname, patronymic, phone, email, address} = req.body;
         const photos = req.files?.photos || null;
         const videos = req.files?.videos || null;
-
         const validationResponse = validator.validate(
             {
                 password,
@@ -164,7 +163,6 @@ class UserController {
         const {password, key, name, surname, patronymic, phone, email, address} = req.body;
         const photos = req.files?.photos || null;
         const videos = req.files?.videos || null;
-
         const validationResponse = validator.validate(
             {password, key, name, surname, patronymic, phone, email, address, photos, videos},
             userUpdateScheme,
@@ -225,7 +223,6 @@ class UserController {
      */
     async deleteUserByKey(req, res, passToNext) {
         const {key} = req.query;
-
         const validationResponse = validator.validate({key}, userDeleteByKeySheme);
 
         if (validationResponse !== true) {
@@ -269,11 +266,9 @@ class UserController {
      */
     async checkUserByCompositeKey(req, res, passToNext) {
         const {compositeKey} = req.query;
-
         const validationResponse = validator.validate({compositeKey}, userCheckByCompositeKeySheme);
 
         if (validationResponse !== true) {
-            console.log('here')
             return passToNext(
                 new AppError(validationResponse[0].message, STATUS_CODES.BAD_REQUEST),
                 validationResponse[0],
@@ -288,6 +283,49 @@ class UserController {
             }
 
             return sendResponse(res, STATUS_CODES.OK, 'User check successfully', result);
+        } catch (error) {
+            return passToNext(
+                new AppError(
+                    error.message || 'Internal Server Error',
+                    error.status || STATUS_CODES.INTERNAL_SERVER_ERROR,
+                    error.response || error,
+                ),
+            );
+        }
+    }
+
+    /**
+     * @description
+     * This controller method to user login.
+     * @param {object} req - The request object.
+     * @param {object} res - The response object.
+     * @param {function} passToNext - The next middlwares function in the application's requestresponce cicle.
+     * @returns {Promise<void>} A promise that resolves to void.
+     */
+    async login(req, res, passToNext) {
+        const {compositeKey, password} = req.query;
+        const validationResponse = validator.validate({compositeKey, password}, loginSheme);
+
+        if (validationResponse !== true) {
+            return passToNext(
+                new AppError(validationResponse[0].message, STATUS_CODES.BAD_REQUEST),
+                validationResponse[0],
+            );
+        }
+
+        try {
+            const result = await UserService.login(compositeKey, password);
+
+            if (result.status === 'fail') {
+                return passToNext(new AppError(result.message, STATUS_CODES.NOT_FOUND));
+            }
+
+            return sendResponse(
+                res,
+                STATUS_CODES.OK,
+                'The user has successfully logged in',
+                result,
+            );
         } catch (error) {
             return passToNext(
                 new AppError(
