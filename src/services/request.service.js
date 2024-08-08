@@ -12,8 +12,8 @@ class RequestService {
      * @param {string} patronymic - User patronymic.
      * @param {string} phone - User phone.
      * @param {string} email - User email.
-     * @param {string} text - User text.
-     * @returns {object} The object of user.
+     * @param {string} text - Request text.
+     * @returns {object} The object of request.
      */
     async createRequest(name, surname, patronymic, phone, email, text) {
         const createTime = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
@@ -29,7 +29,7 @@ class RequestService {
         );
 
         if (!createdRequest.length) {
-            return {status: 'fail', message: 'Error recording user'};
+            return {status: 'fail', message: 'Error recording request'};
         }
 
         if (createdRequest.length) {
@@ -45,7 +45,7 @@ class RequestService {
 
             return {
                 status: 'success',
-                message: `User with id ${createdRequest[0]} created successfully`,
+                message: `Request with id ${createdRequest[0]} created successfully`,
                 id: createdRequest[0],
             };
         }
